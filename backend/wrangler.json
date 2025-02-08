@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-07",
+  "vars":{
+     "DATABASE_URL":"prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMGFjMTgwMDItYTgzZi00YTkxLTk4MTUtZTZlM2VkNWZmN2FjIiwidGVuYW50X2lkIjoiNjk0NDgxZTBkNjRlMjRmODNkMDAxNzQzMmIxYjFhNGRkNzc3Y2YxOWY3Y2M0YmZkYzU1MDc5OTEzY2Q3YjBlMiIsImludGVybmFsX3NlY3JldCI6IjczMTM0NTg1LTAxYTctNDRlOC1hNzZjLWYzODViZTM4ZjU1YSJ9._l8Na9Zt4t1DJGkg0Ja89wxZUCJG9wHrkVhr9qws7gk" , 
+     "DIRECT_URL":"postgresql://neondb_owner:npg_Vpvljbkh0G5K@ep-shrill-tree-a827co30-pooler.eastus2.azure.neon.tech/neondb?sslmode=require",
+     "JWT_SECRET":"my-secret"
+  }
+ 
+
+
+}
