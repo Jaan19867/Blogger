@@ -4,6 +4,8 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 import { cors } from 'hono/cors'
 
 
+
+
 import { env } from 'hono/adapter'
 import { sign  , verify} from 'hono/jwt'
 import {
@@ -43,30 +45,47 @@ app.get('/', (c) => {
 })
 
 app.use("/api/v1/blog/*", async (c, next) => {
-  const jwt = getCookie(c, "jwt_token")
-  console.log("inside auth middleware 1") ; 
-  console.log(jwt); 
-
-  if (!jwt) {
-    c.status(401)
-    return c.json({ error: "Error aa gaya auth me " })
-  }
-   console.log("inside auth middleware 2") 
-  console.log(jwt); 
-  console.log("hi");
-
   try {
-    const payload = await verify(jwt, c.env.JWT_SECRET)
-    if (!payload) {
-      c.status(401)
-      return c.json({ error: "Unauthorized" })
+    // Helper function to extract the JWT token
+    console.log("hello"); 
+    const extractToken = () => {
+      const authHeader = c.req.header("Authorization")
+      console.log(authHeader); 
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        return authHeader.split(" ")[1] // Extract token from Authorization header
+      }
+     console.log("error he bhai"); 
     }
-    console.log(payload)
-    c.set("jwtPayload", payload)
+    console.log("hello 2")
+
+
+
+    const jwt = extractToken()
+    if (!jwt) {
+      c.status(401)
+      return c.json({ error: "Unauthorized: Missing JWT token" })
+    }
+    
+    console.log(jwt); 
+    // Verify the JWT token
+     console.log("lop") 
+    const payload = await verify(jwt, c.env.JWT_SECRET)
+    if (!payload || !payload.id) {
+      c.status(401)
+      return c.json({ error: "Unauthorized: Invalid JWT token" })
+    }
+
+      console.log("lopi")
+    // Set the user ID in the context for downstream handlers
+    c.set("userId", payload.id)
+    console.log(payload.id); 
+    // Proceed to the next middleware or route handler
     await next()
-  } catch (e) {
+  } catch (error) {
+    console.log("mm")
+    console.error("JWT Verification Error:", error.message)
     c.status(401)
-    return c.json({ error: "Invalid token" })
+    return c.json({ error: "Unauthorized: Invalid JWT token" })
   }
 })
 
@@ -91,15 +110,18 @@ app.post("/api/v1/signup", async (c) => {
     })
 
     const token= await sign({id:user.id} , c.env.JWT_SECRET);
-    setCookie(c, "jwt_token", token, {
-      httpOnly: true,
-      secure: false , 
-      maxAge: 30 * 24 * 60 * 60,
-      path: "/",
-    })
+    // setCookie(c, "jwt_token", token, {
+    //   httpOnly: true,
+    //   secure: false , 
+    //   maxAge: 30 * 24 * 60 * 60,
+    //   sameSite:"none" , 
+    //   path: "/",
+    // })
+
+   
   
     return c.json({
-      msg:"user is created "
+      token:token
     }); 
 
    
@@ -145,20 +167,23 @@ app.post('/api/v1/signin' ,  async (c)=>{
    httpOnly: true,
    secure: false,
    maxAge: 30 * 24 * 60 * 60,
-   sameSite:"None",
+   sameSite:"none",
    path: "/",
  })
  console.log(user)
 
  return c.json({
-   "name":user.name
+  token:token  , 
+  name:user.name 
  }) 
  
 })
 
 
 app.post('/api/v1/blog/create', async (c)=>{
-  const userid = c.get("jwtPayload").id
+  console.log("hi  from inside blog create " ); 
+  const userid =  await c.get("userId") ; 
+  console.log("hi after usderid"); 
   console.log(userid)
   console.log("nnn")
   console.log(typeof userid) // Should be "string" for UUIDs
@@ -192,6 +217,7 @@ app.post('/api/v1/blog/create', async (c)=>{
         authorName: user.name,
       },
     })
+ 
     return c.json({
       msg: "posts successfully created ",
     })
@@ -263,25 +289,29 @@ app.get('/api/v2/blog/all', async (c)=>{
 
 // is api se saare user ke blogs aa jaayenge 
 
-app.get('/api/v1/blog' , async(c)=>{
+app.get('/api/v1/blog/users-blog' , async(c)=>{
   // to get user's blog
+  console.log("we are finally here  ")
 
-  const user_id= c.get("jwtPayload").id ; 
+ 
+  const user_id = await c.get("userId")
+  console.log(user_id); 
+  console.log("form users all blog ")
 
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
-  const userWithPosts=await prisma.post.findMany({
-    where:{
-      authorId:user_id
-    }
+  const userWithPosts = await prisma.post.findMany({
+    where: {
+      authorId: user_id,
+    },
   })
+  console.log("from users all blog") ; 
+  console.log(userWithPosts) ; 
   return c.json({
-    data : userWithPosts
+    data: userWithPosts,
   })
-
- 
 })
 
 

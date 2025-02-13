@@ -17,16 +17,28 @@ const CreatePost = () => {
     }
 
     // Call the `onCreatePost` callback with the new post data
-     const response = await axios.post("http://localhost:8787/api/v1/blog/create",{
-        title , 
-        content , 
-        published:true
-     }  , {
-      withCredentials:true
-     })
+
+    const jwt= localStorage.getItem("token"); 
+    console.log(jwt); 
+  const response = await axios.post(
+    "http://localhost:8787/api/v1/blog/create",
+    {
+      title,
+      content,
+      published: true,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`, // Include the token in the Authorization header
+      },
+      withCredentials: true, // Still include this if cookies are used for other purposes
+    }
+  )
      if(!response){
         console.log("post not created ") ; 
-     }else{
+
+      }else{
+       alert("post created ") ; 
         console.log(response)
         console.log("post created "); 
      }

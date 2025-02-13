@@ -13,7 +13,7 @@ import CreatePost from './pages/CreatePost'
 import { UserDashboard } from './pages/UserDashboard'
 import  Header  from './componenet/Header'
 
-
+import { Theme } from '@radix-ui/themes'
 function App() {
 
 
@@ -22,8 +22,11 @@ const [user , setUser]=useState(null);
 
   return (
     <>
-
+    <Theme>
     <Appbar user={user} setUser={setUser} />
+
+    </Theme>
+
 
 
     </>
@@ -53,7 +56,7 @@ function Appbar({user , setUser}){
             <Route path="/blog/:id" element={<Signup />}></Route>
             <Route path="/" element={<Dashboard  user={user} />}></Route>
             <Route path="/createpost" element={<CreatePost />}></Route>
-            <Route path="/userboard" element={<UserDashboard />}></Route>
+            <Route path="/userboard" element={<UserDashboard   user={user} />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

@@ -27,12 +27,18 @@ const Signin = ({setUser , user}) => {
               }
             )
             console.log("hello");
+          
             // setUser(response.data);
-            
+            const jwt=response.data.token ; 
+            console.log(jwt) ; 
+            localStorage.setItem("token", jwt) ;
 
-            console.log(response)
-            setUser(response.data)
-            navigate("/dashboard")
+
+
+  
+            setUser(response.data.name) ; 
+            console.log(response.data); 
+            navigate("/userboard")
           } catch (e) {
             console.log(e)
           }

@@ -20,15 +20,18 @@ const Signup = ({user , setUser}) => {
         password,
       })
       setUser({
-        name : name , 
-        email:email 
-        
+        name: name,
+        email: email,
       })
-    
-      console.log(response.data)
-      navigate("/userpost")
 
-      
+      // setUser(response.data);
+      const jwt = response.data.token
+      console.log(jwt)
+      localStorage.setItem("token", jwt)
+
+      console.log(response.data)
+      setUser(response.data.name); 
+      navigate("/userboard")
     } catch (error) {
       console.error("Signup failed:", error)
       alert("Failed to sign up. Please try again.")

@@ -1,12 +1,30 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Link } from "react-router-dom"
 
+
+
+
+
 const Header = ({ user, setUser }) => {
+
+  useEffect(()=>{
+    console.log(user); 
+  } , [])
+
+  const Signout=()=>{
+
+    alert("hi you are from logout section ") ; 
+
+      localStorage.removeItem("token")
+        setUser("");
+
+
+  }
   return (
     <div>
       <div className="flex justify-between px-4 bg-gray-100">
         {/* Left Section: Blogger Logo */}
-        <div className="w-1/7 bg-blue-500 text-white p-4">
+        <div className="w-1/7 bg-blue-500 text-white p-4 cursor-pointer">
           <Link to={"/"}>Blogger</Link>
         </div>
 
@@ -17,15 +35,20 @@ const Header = ({ user, setUser }) => {
             <Link to={"/createpost"}>Create Post</Link>
           </div>
 
+          {/* <ProfileDropdown/> */}
+
           {/* User Name or Sign In/Sign Out Buttons */}
           {user ? (
             <>
-              <div className="bg-green-500 text-white p-4 rounded">
-                {user.name}
+              <div className="bg-green-500 text-white p-4 rounded cursor-pointer">
+                <Link to={"/userboard"}>
+                  <b>{user}</b>
+                </Link>
               </div>
+
               <button
-                className="bg-red-500 text-white p-4 rounded"
-                onClick={() => setUser(null)} // Log out the user
+                className="bg-red-500 text-white p-4 rounded cursor-pointer"
+                onClick={Signout} // Log out the user
               >
                 Log Out
               </button>
