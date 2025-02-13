@@ -19,10 +19,7 @@ const Signup = ({user , setUser}) => {
         email,
         password,
       })
-      setUser({
-        name: name,
-        email: email,
-      })
+      setUser(name)
 
       // setUser(response.data);
       const jwt = response.data.token
